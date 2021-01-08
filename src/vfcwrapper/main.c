@@ -463,9 +463,9 @@ int _doublecmp(enum FCMP_PREDICATE p, double a, double b) {
 #define define_vector_arithmetic_wrapper(size, precision, operation,	\
 					 operator)			\
   precision##size _##size##x##precision##operation(precision##size a,	\
-						   precision##size b) {	\
+						   precision##size b,	\
+						   precision##size c) { \
     check_backends_implements_vector(precision, operation);		\
-    precision##size c;							\
     for (unsigned char i = 0; i < size; ++i) {				\
       c[i] = NAN;							\
     }									\
@@ -528,9 +528,9 @@ define_vector_arithmetic_wrapper(16, double, div, /);
 #define define_vector_cmp_wrapper(size, precision)			\
   int##size _##size##x##precision##cmp(enum FCMP_PREDICATE p,		\
 				       precision##size a,		\
-				       precision##size b) {		\
+				       precision##size b,		\
+				       int##size c) {			\
     check_backends_implements_vector(precision, cmp);			\
-    int##size c;							\
     for (unsigned char i = 0; i < loaded_backends; i++) {		\
       if (backends[i].interflop_cmp_##precision##_vector) {		\
 	backends[i].interflop_cmp_##precision##				\

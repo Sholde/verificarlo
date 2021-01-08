@@ -43,6 +43,7 @@
 #include <set>
 #include <sstream>
 #include <utility>
+#include <iostream>
 
 #if LLVM_VERSION_MAJOR < 5
 #define CREATE_CALL3(func, op1, op2, op3)                                      \
@@ -370,9 +371,11 @@ struct VfclibInst : public ModulePass {
                              FCI->getOperand(0), FCI->getOperand(1));
       newInst = Builder.CreateIntCast(newInst, retType, true);
     } else {
+      llvm::Value *c = llvm::cast<llvm::Value>(I);
       _LLVMFunctionType hookFunc =
-          GET_OR_INSERT_FUNCTION(M, mcaFunctionName, retType, opType, opType);
-      newInst = CREATE_CALL2(hookFunc, I->getOperand(0), I->getOperand(1));
+	GET_OR_INSERT_FUNCTION(M, mcaFunctionName, retType, opType, opType, opType);
+      newInst = CREATE_CALL3(hookFunc, I->getOperand(0), I->getOperand(1), c);
+                             //(llvm::dyn_cast<llvm::GetElementPtrInst>(I))->getPointerOperand());
     }
 
     return newInst;
