@@ -24,7 +24,7 @@ compile_and_run()
     backend=$1
 
     # Temporarly fix size at 2 because it fail for other size in ceratin condition
-    for size in 2 #4 8 16
+    for size in 2 4 8 16
     do
 	for type in float double
 	do

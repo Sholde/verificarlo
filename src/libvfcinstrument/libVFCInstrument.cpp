@@ -371,11 +371,17 @@ struct VfclibInst : public ModulePass {
                              FCI->getOperand(0), FCI->getOperand(1));
       newInst = Builder.CreateIntCast(newInst, retType, true);
     } else {
-      llvm::Value *c = llvm::cast<llvm::Value>(I);
+      // Create Vector Type
+      Type *vectorType = VectorType::get(Type::getDoubleTy(Builder.getContext()), size);
+      // Allocation of vector
+      AllocaInst *alloca_vect = Builder.CreateAlloca(vectorType);
+      // Load vector
+      Value *retValue = Builder.CreateLoad(alloca_vect);
+
+      //
       _LLVMFunctionType hookFunc =
-	GET_OR_INSERT_FUNCTION(M, mcaFunctionName, retType, opType, opType, opType);
-      newInst = CREATE_CALL3(hookFunc, I->getOperand(0), I->getOperand(1), c);
-                             //(llvm::dyn_cast<llvm::GetElementPtrInst>(I))->getPointerOperand());
+	GET_OR_INSERT_FUNCTION(M, mcaFunctionName, retType, opType, opType, vectorType);
+      newInst = CREATE_CALL3(hookFunc, I->getOperand(0), I->getOperand(1), retValue);
     }
 
     return newInst;
