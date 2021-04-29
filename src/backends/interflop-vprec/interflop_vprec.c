@@ -830,14 +830,7 @@ static float _vprec_round_binary32(float a, char is_input, void *context,
         set[i] = 1;                                                            \
         count++;                                                               \
       }                                                                        \
-    }                                                                          \
-                                                                               \
-    /* test if all vector is set */                                            \
-    if (count == size) {                                                       \
-      return;                                                                  \
-    } else if (count != 0) {                                                   \
-      /* if one element is set we can't vectorized */                          \
-      for (int i = 0; i < size; i++) {                                         \
+      else if (!set[i]) {                                                      \
         /* else, normal case: can be executed even if a                        \
            previously rounded and truncated as denormal */                     \
         if (currentContext->absErr == true) {                                  \
@@ -849,19 +842,6 @@ static float _vprec_round_binary32(float a, char is_input, void *context,
           /* relative error mode */                                            \
           a[i] = round_binary32_normal(a[i], binary32_precision);              \
         }                                                                      \
-      }                                                                        \
-    } else {                                                                   \
-      /* we can vectorize because we are sure that the vector is normal */     \
-      /* else, normal case: can be executed even if a                          \
-         previously rounded and truncated as denormal */                       \
-      if (currentContext->absErr == true) {                                    \
-        /* absolute error mode, or both absolute and relative error modes */   \
-        handle_binary32_normal_absErr_##size##x(a, aexp.s32,                   \
-                                                binary32_precision,            \
-                                                currentContext);               \
-      } else {                                                                 \
-        /* relative error mode */                                              \
-        round_binary32_normal_x##size(a, binary32_precision);                  \
       }                                                                        \
     }                                                                          \
   }
@@ -1012,14 +992,7 @@ static double _vprec_round_binary64(double a, char is_input, void *context,
         set[i] = 1;                                                            \
         count++;                                                               \
       }                                                                        \
-    }                                                                          \
-                                                                               \
-    /* test if all vector is set */                                            \
-    if (count == size) {                                                       \
-      return;                                                                  \
-    } else if (count != 0) {                                                   \
-      /* if one element is set we can't vectorized */                          \
-      for (int i = 0; i < size; i++) {                                         \
+      else if (!set[i]) {                                                      \
         /* else, normal case: can be executed even if a                        \
            previously rounded and truncated as denormal */                     \
         if (currentContext->absErr == true) {                                  \
@@ -1031,19 +1004,6 @@ static double _vprec_round_binary64(double a, char is_input, void *context,
           /* relative error mode */                                            \
           a[i] = round_binary64_normal(a[i], binary64_precision);              \
         }                                                                      \
-      }                                                                        \
-    } else {                                                                   \
-      /* we can vectorize because we are sure that the vector is normal */     \
-      /* else, normal case: can be executed even if a                          \
-         previously rounded and truncated as denormal */                       \
-      if (currentContext->absErr == true) {                                    \
-        /* absolute error mode, or both absolute and relative error modes */   \
-        handle_binary64_normal_absErr_##size##x(a, aexp.s64,                   \
-                                                binary64_precision,            \
-                                                currentContext);               \
-      } else {                                                                 \
-        /* relative error mode */                                              \
-        round_binary64_normal_x##size(a, binary64_precision);                  \
       }                                                                        \
     }                                                                          \
   }
